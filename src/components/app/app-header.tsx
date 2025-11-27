@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { Button } from '../ui/button';
-import { Globe, Languages, Check, ChevronDown, Headset, Ear, PenSquare, Wand2, Menu, Sun, Moon, Laptop } from 'lucide-react';
+import { Globe, Languages, Check, ChevronDown, Headset, Ear, PenSquare, Wand2, Menu, Sun, Moon, Laptop, CircleDollarSign } from 'lucide-react';
 import ContactUs from './contact-us';
-import { ThemeToggle } from './theme-toggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +42,7 @@ const headerTranslations = {
         reading_mode: 'Oxuma Modu',
         theme: 'Tema Rəngi',
         ai_recommender: 'AI Köməkçi',
+        currency_converter: 'Valyuta Konvertoru',
         light: 'İşıqlı',
         dark: 'Tünd',
         system: 'Sistem',
@@ -54,6 +54,7 @@ const headerTranslations = {
         reading_mode: 'Reading Mode',
         theme: 'Theme Color',
         ai_recommender: 'AI Recommender',
+        currency_converter: 'Currency Converter',
         light: 'Light',
         dark: 'Dark',
         system: 'System',
@@ -65,6 +66,7 @@ const headerTranslations = {
         reading_mode: 'Режим чтения',
         theme: 'Цвет темы',
         ai_recommender: 'AI Рекомендатор',
+        currency_converter: 'Конвертер валют',
         light: 'Светлая',
         dark: 'Темная',
         system: 'Системная',
@@ -159,6 +161,12 @@ const AppHeader = ({ isAdmin = false, lang = 'az', setLang }: AppHeaderProps) =>
                     <DropdownMenuItem onSelect={handleAiRecommenderClick}>
                         <Wand2 className="mr-2" />
                         <span>{t.ai_recommender}</span>
+                    </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+                       <a href="/home#currency-converter">
+                            <CircleDollarSign className="mr-2" />
+                            <span>{t.currency_converter}</span>
+                       </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                        <Link href="/communication-aid">
