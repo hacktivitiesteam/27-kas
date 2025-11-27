@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -262,13 +262,14 @@ function TravelSection({ countries, loading, lang, onCountryClick }: { countries
   );
 }
 
-function CurrencyConverter({ lang }: { lang: 'az' | 'en' | 'ru' }) {
+function CurrencyConverter({ lang, isVisible }: { lang: 'az' | 'en' | 'ru', isVisible: boolean }) {
   const [amount, setAmount] = useState('100');
   const [fromCurrency, setFromCurrency] = useState('AZN');
   const [toCurrency, setToCurrency] = useState('USD');
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { isReadingMode, speakText } = useReadingMode();
+  const converterRef = useRef<HTMLDivElement>(null);
 
   const rates: { [key: string]: number } = {
       USD: 0.59, TRY: 19.53, RUB: 54.28, AED: 2.16, GEL: 1.67, EUR: 0.55, GBP: 0.46, JPY: 92.89, CHF: 0.53,
@@ -325,14 +326,21 @@ function CurrencyConverter({ lang }: { lang: 'az' | 'en' | 'ru' }) {
   useEffect(() => {
     handleConversion();
   }, [handleConversion]);
+  
+  useEffect(() => {
+    if (isVisible && converterRef.current) {
+        converterRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isVisible])
 
   const currencyOptions = Object.keys(rates).sort().map(currency => (
     <SelectItem key={currency} value={currency}>{currency}</SelectItem>
   ));
   
+  if (!isVisible) return null;
 
   return (
-    <Card id="currency-converter" className="p-8 bg-card/50 border-border/50 scroll-mt-24">
+    <Card ref={converterRef} id="currency-converter" className="p-8 bg-card/50 border-border/50 scroll-mt-24">
       <h3 className={cn("mb-4 text-2xl font-bold text-center", isReadingMode && 'cursor-pointer hover:bg-muted/50')} onMouseEnter={() => handleSpeak(t.title)}>{t.title}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center relative">
         <div>
@@ -377,6 +385,7 @@ function CurrencyConverter({ lang }: { lang: 'az' | 'en' | 'ru' }) {
 export default function HomePage() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showConverter, setShowConverter] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
   const auth = useAuth();
@@ -431,6 +440,18 @@ export default function HomePage() {
     getCountries();
   }, [firestore, toast]);
   
+   useEffect(() => {
+    const handleShowConverter = () => {
+      setShowConverter(true);
+    };
+
+    window.addEventListener('show-converter', handleShowConverter);
+
+    return () => {
+      window.removeEventListener('show-converter', handleShowConverter);
+    };
+  }, []);
+
   const handleCountryClick = (href: string) => {
     triggerAnimation({ icon: Globe, onAnimationEnd: () => router.push(href) });
   };
@@ -464,7 +485,7 @@ export default function HomePage() {
 
         <TravelSection countries={countries} loading={loading} lang={lang} onCountryClick={handleCountryClick} />
 
-        <CurrencyConverter lang={lang} />
+        <CurrencyConverter lang={lang} isVisible={showConverter} />
       </main>
     </>
   );

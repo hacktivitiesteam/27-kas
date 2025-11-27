@@ -96,6 +96,11 @@ const AppHeader = ({ isAdmin = false, lang = 'az', setLang }: AppHeaderProps) =>
         onAnimationEnd: () => setIsContactUsOpen(true)
     });
   }
+
+  const handleShowConverter = () => {
+    // Dispatch a custom event that the homepage can listen to
+    window.dispatchEvent(new CustomEvent('show-converter'));
+  };
   
    const handleLanguageChange = (e: Event, langCode: 'az' | 'en' | 'ru') => {
       if (!setLang) return;
@@ -162,11 +167,9 @@ const AppHeader = ({ isAdmin = false, lang = 'az', setLang }: AppHeaderProps) =>
                         <Wand2 className="mr-2" />
                         <span>{t.ai_recommender}</span>
                     </DropdownMenuItem>
-                     <DropdownMenuItem asChild>
-                       <a href="/home#currency-converter">
-                            <CircleDollarSign className="mr-2" />
-                            <span>{t.currency_converter}</span>
-                       </a>
+                     <DropdownMenuItem onSelect={handleShowConverter}>
+                        <CircleDollarSign className="mr-2" />
+                        <span>{t.currency_converter}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                        <Link href="/communication-aid">
@@ -244,3 +247,5 @@ const AppHeader = ({ isAdmin = false, lang = 'az', setLang }: AppHeaderProps) =>
 };
 
 export default AppHeader;
+
+    
